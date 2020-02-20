@@ -80,7 +80,7 @@ function resultadoCat(){
             
             for(let c = 0 ; c < cantidad ; c++){
                 
-                img += "<img class='col-3 col-sm-6' style='height: 20vh;' src='"+datos[c]["url"]+"'>";
+                img += "<img class='col-6 col-md-4 col-lg-3' style='height: 20vh;' src='"+datos[c]["url"]+"'>";
                   
             }           
 
