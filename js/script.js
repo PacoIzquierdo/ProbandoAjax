@@ -2,10 +2,64 @@ const urlCategorias =
   "https://api.thecatapi.com/v1/categories";
 const urlRazas =
   "https://api.thecatapi.com/v1/breeds";
-const categoriasInput = document.getElementById("select-categorias");
-const razasInput = document.getElementById('select-razas');
+const rategoria = document.getElementById('rategoria');
 var api_key="271a4443-418d-4bf3-ae50-7b478da7f770";
 var pagina = 1;
+var patata = 'category';
+
+window.onload = inicio;
+
+function inicio(){
+    
+    selectorDeCosas();
+    
+    document.getElementById('busqueda').addEventListener('click', selectorDeCosas);
+    document.getElementById('busqueda1').addEventListener('click', selectorDeCosas);
+    
+    rategoria.addEventListener('change', resultadoCat)
+    
+}
+
+function selectorDeCosas() {
+    
+    rategoria.innerHTML = '<option value="">Ninguno</option>';
+    
+    if(document.getElementById('busqueda').checked){
+        
+        getJSON(urlCategorias).then(function(data) {
+            data.forEach(function(categoria) {
+              option = document.createElement("option");
+              option.setAttribute("value", categoria.id);
+              option.innerHTML = categoria.name;
+              rategoria.appendChild(option);
+            });
+        },
+            function(status) {
+                alert("Algo fue mal.");
+            });
+        
+        patata = 'category';
+        
+    }
+    
+    else {
+        
+        getJSON(urlRazas).then(
+          function(data) {
+            data.forEach(function(raza) {
+              option = document.createElement("option");
+              option.setAttribute("value", raza.id);
+              option.innerHTML = raza.name;
+              rategoria.appendChild(option);
+            });
+          },
+          function(status) {
+            alert("Algo fue mal.");
+          }
+        );
+        patata = 'breed';
+    }   
+}
 
 // llámada asíncrona con AJAX para categorías
 var getJSON = function(url) {
@@ -26,36 +80,6 @@ var getJSON = function(url) {
   });
 };
 
-// Hacemos una petición AJAX para crear las categorias
-getJSON(urlCategorias).then(
-  function(data) {
-    data.forEach(function(categoria) {
-      option = document.createElement("option");
-      option.setAttribute("value", categoria.id);
-      option.innerHTML = categoria.name;
-      categoriasInput.appendChild(option);
-    });
-  },
-  function(status) {
-    alert("Algo fue mal.");
-  }
-);
-// Select de razas
-/* getJSON(urlRazas).then(
-  function(data) {
-    data.forEach(function(raza) {
-      option = document.createElement("option");
-      option.setAttribute("value", raza.id);
-      option.innerHTML = raza.name;
-      razasInput.appendChild(option);
-    });
-  },
-  function(status) {
-    alert("Algo fue mal.");
-  }
-);
-*/
-
 // El resto de funciones o lo que sea
 function resultadoCat(){
     
@@ -63,15 +87,18 @@ function resultadoCat(){
     var xhr = new XMLHttpRequest();
  
   // Recoger los valores para la busqueda
-    var cat = document.getElementById('select-categorias').value;
+    var ratval = document.getElementById('rategoria').value;
     var cantidad = document.getElementById('select-cantidad').value;
     var tipo = document.getElementById("select-tipo").value
     
+    
+    var urlBusqueda = 'https://api.thecatapi.com/v1/images/search?api_key=271a4443-418d-4bf3-ae50-7b478da7f770&limit='+cantidad+'&mime_types='+tipo+'&'+patata+'_ids='+ratval;
+    console.log(urlBusqueda);
   // Limpiar la parte de la página en la que saldrán
     document.getElementById('expositor').innerHTML = "";
 
     // Llamada a la api para obtener lo que sea, en este caso fotos de esas pequeñas y adorables bolas de pelo con cuchillos en las patas
-    xhr.open('GET','https://api.thecatapi.com/v1/images/search?api_key=271a4443-418d-4bf3-ae50-7b478da7f770&category_ids='+cat+'&limit='+cantidad+'&mime_types='+tipo, true);    
+    xhr.open('GET',urlBusqueda, true);    
     xhr.send();
     
     // Una vez se haya realizado la llamada, cambiar la página

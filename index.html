@@ -10,12 +10,12 @@
 <body>
     
     <div class="buscar">
-        <select name="cat" id="select-categorias">
-            <option value="">None</option>
-        </select>
-        <!--select name="cat" id="select-razas">
-            <option value="">None</option>
-        </select-->
+        
+        <label for=""><input type="radio" id='busqueda' name="select" value="categoria" checked>Categor&iacute;a</label>
+        <label for=""><input type="radio" id='busqueda1' name="select" value="raza">Raza</label>
+        
+        <select name="rategoria" id="rategoria"></select>
+        
         <select name="cat" id="select-cantidad">
             <option value="5">5</option>
             <option value="10">10</option>
@@ -29,7 +29,6 @@
             <option value="JPG">JPG</option>
             <option value="PNG">PNG</option>
         </select>
-        <input type="submit" name="Enviar" id="Enviar" onclick="resultadoCat()">
     </div>
     <div class="container-fluid">
         <div id="expositor" class="row justify-content-md-center"></div>        
