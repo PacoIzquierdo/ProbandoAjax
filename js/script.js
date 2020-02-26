@@ -4,7 +4,10 @@ const urlRazas =
   "https://api.thecatapi.com/v1/breeds";
 const rategoria = document.getElementById('rategoria');
 var api_key="271a4443-418d-4bf3-ae50-7b478da7f770";
+var fotos = "";
 var pagina = 1;
+var maxImg = "";
+var maxPg = "";
 var patata = 'category';
 
 window.onload = inicio;
@@ -83,17 +86,16 @@ var getJSON = function(url) {
 // El resto de funciones o lo que sea
 function resultadoCat(){
     
+    pagina = 1;
   // Crear request
     var xhr = new XMLHttpRequest();
  
   // Recoger los valores para la busqueda
     var ratval = document.getElementById('rategoria').value;
-    var cantidad = document.getElementById('select-cantidad').value;
-    var tipo = document.getElementById("select-tipo").value
+    var tipo = document.getElementById("select-tipo").value;
     
     
-    var urlBusqueda = 'https://api.thecatapi.com/v1/images/search?api_key=271a4443-418d-4bf3-ae50-7b478da7f770&limit='+cantidad+'&mime_types='+tipo+'&'+patata+'_ids='+ratval;
-    console.log(urlBusqueda);
+    var urlBusqueda = 'https://api.thecatapi.com/v1/images/search?api_key=271a4443-418d-4bf3-ae50-7b478da7f770&limit=100&mime_types='+tipo+'&'+patata+'_ids='+ratval;
   // Limpiar la parte de la página en la que saldrán
     document.getElementById('expositor').innerHTML = "";
 
@@ -112,27 +114,49 @@ function resultadoCat(){
 
             // Interpretar los datos obtenidos
             var datos = JSON.parse(xhr.responseText);
-            
-
-            // Bucle porque queremos más de una foto, en caso de que fuese solo una, el for es innecesario, pero no falla
-            for(let c = 0 ; c < cantidad ; c++){
-                
-                img += "<img class='col-sm-10 col-md-4 col-lg-3' style='height: 20vh;' src='"+datos[c]["url"]+"'>";
-                  
-            }           
-
-            // Añadir todo a la página para visualizarlo
-            document.getElementById('expositor').innerHTML += img;
+            maxImg = xhr.getResponseHeader("Pagination-Count");
+            fotos = datos;
+            mostrarFotos();
             
         }
         
         else {
           // JA!JA! Ahora puedes ir a la esquina a llorar
-            console.log("Ha habido fallos");
+            //console.log("Ha habido fallos");
         }
         
     }
     
+}
+
+function mostrarFotos(){
+        
+    document.getElementById('paginaAct').innerHTML = pagina;
+    var cantidad = document.getElementById('select-cantidad').value;
+    maxPg = (maxImg/cantidad).toFixed(0) - 1;
+    var mostrando = cantidad * pagina;
     
+    if(maxPg == pagina) document.getElementById('sig').style.display = 'none';
+    else document.getElementById('sig').style.display = 'inline-block';
     
+    if(pagina == 1) document.getElementById('ant').style.display = 'none';
+    else document.getElementById('ant').style.display = 'inline-block';
+        
+    document.getElementById('expositor').innerHTML = "";
+    
+    for(let c = mostrando-cantidad ; c < mostrando ; c++){
+        console.log(c)
+        let img = "<img class='col-sm-10 col-md-4 col-lg-3' style='height: 20vh;' src='"+fotos[c]["url"]+"'>";
+        document.getElementById('expositor').innerHTML += img;
+    }
+        
+}
+
+function pagAnt(){
+    pagina -= 1;
+    mostrarFotos();
+}
+function pagSig(){
+    pagina += 1;
+    mostrarFotos();
 }
