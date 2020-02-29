@@ -133,13 +133,13 @@ function pruebaEstupida(cosas, url1){
   for(let c = 0 ; c < cosas ; c++){
 
     var x = new XMLHttpRequest();
-    var url2 = url1 + '&page='+c;
+    var url2 = url1 + '&page='+c+"&order=desc";
     x.open('get', url2, true);
     x.send();
     x.onreadystatechange = function() {
       if(x.readyState == 4 && x.status == 200){
         var todo = JSON.parse(x.responseText)
-        fotos[c] = todo[0];
+        fotos[c] = todo;
       }
       else{
       }
@@ -152,7 +152,7 @@ function pruebaEstupida(cosas, url1){
 
 function mostrarFotos(){
         
-    document.getElementById('paginaAct').innerHTML = pagina;
+    document.getElementById('paginaAct').innerHTML = pagina+" - "+nPaginas();
     var cantidad = document.getElementById('select-cantidad').value;
     var mostrando = cantidad * pagina;
     
