@@ -5,7 +5,7 @@ const urlRazas =
 const rategoria = document.getElementById('rategoria');
 var api_key="271a4443-418d-4bf3-ae50-7b478da7f770";
 var fotos = [];
-var pagina = 1;
+var pagina = 0;
 var maxImg = "";
 var patata = 'category';
 
@@ -82,23 +82,31 @@ var getJSON = function(url) {
 };
 
 // El resto de funciones o lo que sea
+
+function resultadoBusqueda(){
+  pagina = 0;
+  resultadoCat();
+}
+
 function resultadoCat(){
-    
-    pagina = 1;
+
   // Crear request
     var xhr = new XMLHttpRequest();
  
   // Recoger los valores para la busqueda
     var ratval = document.getElementById('rategoria').value;
     var tipo = document.getElementById("select-tipo").value;
+    var limite = document.getElementById('select-cantidad').value;
     
     
-    var urlBusqueda = 'https://api.thecatapi.com/v1/images/search?api_key=271a4443-418d-4bf3-ae50-7b478da7f770&limit=100&mime_types='+tipo+'&'+patata+'_ids='+ratval;
+    var urlBusqueda = 'https://api.thecatapi.com/v1/images/search?api_key=271a4443-418d-4bf3-ae50-7b478da7f770&limit='+limite+'&mime_types='+tipo+'&'+patata+'_ids='+ratval;
+    var urlBus = urlBusqueda+'&page='+pagina+'&order=Desc';
+    console.log(urlBus)
   // Limpiar la parte de la página en la que saldrán
     document.getElementById('expositor').innerHTML = "";
 
     // Llamada a la api para obtener lo que sea, en este caso fotos de esas pequeñas y adorables bolas de pelo con cuchillos en las patas
-    xhr.open('GET',urlBusqueda, true);    
+    xhr.open('GET',urlBus, true);    
     xhr.send();
     
     // Una vez se haya realizado la llamada, cambiar la página
@@ -111,7 +119,6 @@ function resultadoCat(){
             var datos = JSON.parse(xhr.responseText);
             maxImg = xhr.getResponseHeader("Pagination-Count");
             fotos = datos;
-            //pruebaEstupida(maxImg, urlBusqueda);
   
             mostrarFotos();
             
@@ -126,45 +133,22 @@ function resultadoCat(){
     
 }
 
-function pruebaEstupida(cosas, url1){
-
-  fotos = [];
-
-  for(let c = 0 ; c < cosas ; c++){
-
-    var x = new XMLHttpRequest();
-    var url2 = url1 + '&page='+c+"&order=desc";
-    x.open('get', url2, true);
-    x.send();
-    x.onreadystatechange = function() {
-      if(x.readyState == 4 && x.status == 200){
-        var todo = JSON.parse(x.responseText)
-        fotos[c] = todo;
-      }
-      else{
-      }
-    }
-
-  }
-  console.log(fotos)
-
-}
 
 function mostrarFotos(){
         
-    document.getElementById('paginaAct').innerHTML = pagina+" - "+nPaginas();
+    document.getElementById('paginaAct').innerHTML = pagina+1+" - "+nPaginas();
     var cantidad = document.getElementById('select-cantidad').value;
     var mostrando = cantidad * pagina;
     
-    if(nPaginas() == pagina) document.getElementById('sig').style.display = 'none';
+    if(nPaginas() == pagina+1) document.getElementById('sig').style.display = 'none';
     else document.getElementById('sig').style.display = 'inline-block';
     
-    if(pagina == 1) document.getElementById('ant').style.display = 'none';
+    if(pagina+1 == 1) document.getElementById('ant').style.display = 'none';
     else document.getElementById('ant').style.display = 'inline-block';
         
     document.getElementById('expositor').innerHTML = "";
     
-    for(let c = mostrando-cantidad ; c < mostrando && c < fotos.length ; c++){
+    for(let c = 0 ; c < cantidad && c < fotos.length ; c++){
         let img = "<img class='col-sm-10 col-md-4 col-lg-3' style='height: 20vh;' src='"+fotos[c]["url"]+"'>";
         document.getElementById('expositor').innerHTML += img;
     }
@@ -179,9 +163,9 @@ var nPaginas = () => {
 
 function pagAnt(){
     pagina -= 1;
-    mostrarFotos();
+    resultadoCat();
 }
 function pagSig(){
     pagina += 1;
-    mostrarFotos();
+    resultadoCat();
 }
