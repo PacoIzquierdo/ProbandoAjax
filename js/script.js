@@ -4,10 +4,9 @@ const urlRazas =
   "https://api.thecatapi.com/v1/breeds";
 const rategoria = document.getElementById('rategoria');
 var api_key="271a4443-418d-4bf3-ae50-7b478da7f770";
-var fotos = "";
+var fotos = [];
 var pagina = 1;
 var maxImg = "";
-var maxPg = "";
 var patata = 'category';
 
 window.onload = inicio;
@@ -19,7 +18,6 @@ function inicio(){
     document.getElementById('busqueda').addEventListener('click', selectorDeCosas);
     document.getElementById('busqueda1').addEventListener('click', selectorDeCosas);
     
-    rategoria.addEventListener('change', resultadoCat)
     
 }
 
@@ -108,35 +106,57 @@ function resultadoCat(){
         
         //Comprobar que todo ha ido bien
         if(xhr.readyState == 4 && xhr.status == 200){
-            
-          // Crear string para añadir las cosas después a la zona en la que se mostrará
-            var img = "";
 
             // Interpretar los datos obtenidos
             var datos = JSON.parse(xhr.responseText);
             maxImg = xhr.getResponseHeader("Pagination-Count");
             fotos = datos;
+            //pruebaEstupida(maxImg, urlBusqueda);
+  
             mostrarFotos();
             
         }
         
         else {
           // JA!JA! Ahora puedes ir a la esquina a llorar
-            //console.log("Ha habido fallos");
+            console.log("Ha habido fallos");
         }
         
     }
     
 }
 
+function pruebaEstupida(cosas, url1){
+
+  fotos = [];
+
+  for(let c = 0 ; c < cosas ; c++){
+
+    var x = new XMLHttpRequest();
+    var url2 = url1 + '&page='+c;
+    x.open('get', url2, true);
+    x.send();
+    x.onreadystatechange = function() {
+      if(x.readyState == 4 && x.status == 200){
+        var todo = JSON.parse(x.responseText)
+        fotos[c] = todo[0];
+      }
+      else{
+      }
+    }
+
+  }
+  console.log(fotos)
+
+}
+
 function mostrarFotos(){
         
     document.getElementById('paginaAct').innerHTML = pagina;
     var cantidad = document.getElementById('select-cantidad').value;
-    maxPg = (maxImg/cantidad).toFixed(0) - 1;
     var mostrando = cantidad * pagina;
     
-    if(maxPg == pagina) document.getElementById('sig').style.display = 'none';
+    if(nPaginas() == pagina) document.getElementById('sig').style.display = 'none';
     else document.getElementById('sig').style.display = 'inline-block';
     
     if(pagina == 1) document.getElementById('ant').style.display = 'none';
@@ -144,12 +164,17 @@ function mostrarFotos(){
         
     document.getElementById('expositor').innerHTML = "";
     
-    for(let c = mostrando-cantidad ; c < mostrando ; c++){
-        console.log(c)
+    for(let c = mostrando-cantidad ; c < mostrando && c < fotos.length ; c++){
         let img = "<img class='col-sm-10 col-md-4 col-lg-3' style='height: 20vh;' src='"+fotos[c]["url"]+"'>";
         document.getElementById('expositor').innerHTML += img;
     }
         
+}
+
+var nPaginas = () => {
+
+  return Math.ceil(maxImg/document.getElementById('select-cantidad').value);
+
 }
 
 function pagAnt(){
